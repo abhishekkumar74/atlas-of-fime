@@ -19,9 +19,26 @@ atlas-of-fime/
 │   ├── src/             # Express controllers & API endpoints (/api/events, /api/search)
 │   └── package.json     # Backend API dependencies
 │
+├── vercel.json          # Unified 1-Click Vercel Deployment Configuration
 ├── package.json         # Workspace root scripts
 └── README.md            # Documentation
 ```
+
+---
+
+## 🌐 1-Click Vercel Production Deployment (Client & Server Together)
+
+This repository includes a unified **[`vercel.json`](vercel.json)** configuration file. You can deploy **BOTH the frontend React client AND the Node/Express backend server together in a single Vercel project**:
+
+1. Go to **[Vercel.com](https://vercel.com/)** and import repository: **`abhishekkumar74/atlas-of-fime`**.
+2. Keep **Root Directory** as **`./`** (default root repository).
+3. Set **Environment Variables**:
+   - `VITE_SUPABASE_URL` = `https://mhskjcvtfoplcqrihnqq.supabase.co`
+   - `VITE_SUPABASE_ANON_KEY` = *(your anon key)*
+   - `SUPABASE_SERVICE_ROLE_KEY` = *(your service role key)*
+   - `VITE_OPENAI_API_KEY` = *(your openai key)*
+4. Click **Deploy**.
+   - Vercel automatically builds the React SPA and deploys the Express server endpoints (`/api/*`) in 1 click!
 
 ---
 
@@ -59,7 +76,7 @@ atlas-of-fime/
 # Install dependencies
 npm install
 
-# Start local development server (Client Frontend)
+# Start local development server
 npm run dev
 
 # Run automated test suite
