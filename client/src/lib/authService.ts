@@ -94,6 +94,15 @@ export async function signUp(email: string, password: string, displayName: strin
   });
 }
 
+export async function signInWithOAuth(provider: 'google' | 'github') {
+  return await supabase.auth.signInWithOAuth({
+    provider,
+    options: {
+      redirectTo: `${window.location.origin}/admin`,
+    },
+  });
+}
+
 export async function resetPassword(email: string) {
   return await supabase.auth.resetPasswordForEmail(email, {
     redirectTo: `${window.location.origin}/login`,
