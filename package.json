@@ -1,43 +1,20 @@
 {
-  "name": "atlas-of-time",
+  "name": "atlas-of-time-monorepo",
   "private": true,
   "version": "0.0.1",
-  "type": "module",
+  "workspaces": [
+    "client",
+    "server"
+  ],
   "scripts": {
-    "dev": "vite",
-    "build": "tsc --noEmit && vite build",
-    "lint": "eslint src",
-    "typecheck": "tsc --noEmit",
-    "test": "vitest run"
-  },
-  "dependencies": {
-    "@supabase/supabase-js": "^2.47.0",
-    "@tanstack/react-query": "^5.62.0",
-    "@types/maplibre-gl": "^1.13.2",
-    "lucide-react": "^0.468.0",
-    "maplibre-gl": "^6.4.0",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "react-router-dom": "^6.28.0",
-    "zustand": "^5.0.2"
+    "dev": "npm run dev --prefix client",
+    "dev:all": "concurrently \"npm run dev --prefix server\" \"npm run dev --prefix client\"",
+    "build": "npm run build --prefix client",
+    "test": "npm run test --prefix client",
+    "lint": "npm run lint --prefix client",
+    "typecheck": "npm run typecheck --prefix client"
   },
   "devDependencies": {
-    "@testing-library/jest-dom": "^6.6.3",
-    "@testing-library/react": "^16.1.0",
-    "@types/node": "^22.10.0",
-    "@types/react": "^18.3.12",
-    "@types/react-dom": "^18.3.1",
-    "@typescript-eslint/eslint-plugin": "^8.67.0",
-    "@typescript-eslint/parser": "^8.67.0",
-    "@vitejs/plugin-react": "^4.3.4",
-    "autoprefixer": "^10.4.20",
-    "eslint": "^9.16.0",
-    "jsdom": "^25.0.1",
-    "postcss": "^8.4.49",
-    "prettier": "^3.4.2",
-    "tailwindcss": "^3.4.17",
-    "typescript": "^5.7.2",
-    "vite": "^6.0.3",
-    "vitest": "^2.1.8"
+    "concurrently": "^9.1.2"
   }
 }

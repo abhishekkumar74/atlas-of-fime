@@ -1,6 +1,27 @@
 # Atlas of Time (`atlas-of-fime`)
 
-An interactive, web-based timeline platform exploring 13.8 billion years of Earth, Humanity, and Civilization through a logarithmic chronological spine, real-world spatial map, and AI historian navigation.
+An open-source, developer-friendly multi-package platform exploring 13.8 billion years of Earth, Humanity, and Civilization through a logarithmic chronological spine, real-world spatial map, and AI historian navigation.
+
+---
+
+## 📁 Repository Architecture
+
+The project is structured into a clean multi-package layout:
+
+```
+atlas-of-fime/
+├── client/              # Frontend (React 18, Vite, TailwindCSS, MapLibre, Zustand)
+│   ├── src/             # Application UI components, pages, hooks, and tests
+│   ├── public/          # Static assets and icons
+│   └── package.json     # Frontend dependencies and scripts
+│
+├── server/              # Backend (Node.js, Express API server, Supabase/OpenAI handlers)
+│   ├── src/             # Express controllers & API endpoints (/api/events, /api/search)
+│   └── package.json     # Backend API dependencies
+│
+├── package.json         # Workspace root scripts
+└── README.md            # Documentation
+```
 
 ---
 
@@ -30,18 +51,15 @@ An interactive, web-based timeline platform exploring 13.8 billion years of Eart
 - Role-based administration dashboard (`Viewer`, `Editor`, `Super Admin`).
 - Complete editorial lifecycle governance (`Draft ➔ Review ➔ Approved ➔ Published`) ensuring academic sourcing and fact-checking prior to public release.
 
-### 🔎 Fast Full-Text Search
-- Instant full-text search across historical events, historical people, and civilizations with weighted title and summary ranking.
-
 ---
 
-## 🚀 Quickstart & Scripts
+## 🚀 Quickstart & Commands
 
 ```bash
 # Install dependencies
 npm install
 
-# Start local development server
+# Start local development server (Client Frontend)
 npm run dev
 
 # Run automated test suite
