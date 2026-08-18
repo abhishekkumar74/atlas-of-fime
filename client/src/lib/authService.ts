@@ -94,6 +94,12 @@ export async function signUp(email: string, password: string, displayName: strin
   });
 }
 
+export async function resetPassword(email: string) {
+  return await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${window.location.origin}/login`,
+  });
+}
+
 export async function signOut() {
   return await supabase.auth.signOut();
 }
