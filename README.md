@@ -1,102 +1,58 @@
 # Atlas of Time (`atlas-of-fime`)
 
-An open-source, interactive timeline platform exploring 13.8 billion years of Earth, Humanity, and Civilization through a logarithmic chronological spine, real-world spatial map, and grounded AI historian navigation.
+An interactive, web-based timeline platform exploring 13.8 billion years of Earth, Humanity, and Civilization through a logarithmic chronological spine, real-world spatial map, and AI historian navigation.
 
 ---
 
-## 🌟 Key Features & Architecture
+## ✨ Features & Functionality
 
-- **Logarithmic Chronological Spine:** Seamlessly visualizes cosmic time (Big Bang ~13.8B BP) down to the modern era on a single continuous, non-linear timeline.
-- **Time Machine Scrubber Wheel:** Tactile continuous time scrubber for effortless time-travel across millennia with real-time map locus fly-to and era highlighting.
-- **Real-World Spatial Atlas:** MapLibre GL JS vector & raster integration with historical boundary snapshot overlays.
-- **Grounded AI Historian:** Retrieval-augmented navigation over Supabase database records using OpenAI `gpt-4o-mini` with clickable entity citations.
-- **Editorial CMS & Role-Based Security:** Multistage editorial workflow (`Draft ➔ Review ➔ Approved ➔ Published`) enforced by Supabase Row Level Security (RLS) policies.
+### 🌌 Logarithmic Chronological Timeline
+- Visualizes 13.8 billion years of cosmic and human history on a single continuous horizontal timeline.
+- Logarithmic scaling balances deep cosmic time (Big Bang, formation of Earth, evolutionary biology) alongside dense historical eras (ancient empires, industrial revolution, modern age).
 
----
+### ⏳ Time Machine Scrubber Wheel
+- Tactile, continuous mechanical time wheel for intuitive time-travel across millennia.
+- Dragging or wheel-scrolling on the scrubber continuously tunes the era, centers the timeline, flies the spatial map to geographic loci, and highlights active events.
 
-## 🗄️ Database Setup & Supabase DDL Schema
+### 🗺️ Real-World Spatial Atlas
+- Interactive vector map powered by MapLibre GL JS.
+- Synchronizes with timeline events to display spatial marker loci and historical territory boundary snapshot overlays.
 
-This repository includes a complete, self-contained, open-source Supabase DDL SQL schema file: **[`supabase/schema.sql`](supabase/schema.sql)**.
+### 📌 Non-Intrusive Active Event Dashboard
+- Highlights tuned historical events on a sleek bottom dashboard card showing title, formatted date, primary region, and summary.
+- Clicking *"View Full Details ➔"* opens the comprehensive side detail panel.
 
-To set up your own database backend:
+### 🤖 Grounded AI Historian Navigation
+- AI assistant providing concise answers strictly grounded in active historical database records.
+- Generates responses with interactive, clickable entity citation chips.
 
-1. Create a free project at [Supabase.com](https://supabase.com/).
-2. Navigate to **SQL Editor** in your Supabase Dashboard.
-3. Paste the contents of `supabase/schema.sql` and click **Run**.
-4. This instantly provisions:
-   - All 11 core production tables (`events`, `event_dates`, `event_locations`, `people`, `civilizations`, `relationships`, `sources`, `profiles`, `layers`, `event_layers`, `event_sources`).
-   - Postgres Full-Text Search (`fts` generated columns & GIN indexes).
-   - Row Level Security (RLS) policies for Viewer, Editor, and Admin role isolation.
-   - Automatic `on_auth_user_created` trigger for user profile management.
+### 🛡️ Editorial CMS & Multi-Stage Approval Workflow
+- Role-based administration dashboard (`Viewer`, `Editor`, `Super Admin`).
+- Complete editorial lifecycle governance (`Draft ➔ Review ➔ Approved ➔ Published`) ensuring academic sourcing and fact-checking prior to public release.
 
----
-
-## 🔒 Security & Environment Setup
-
-This repository contains **zero hardcoded API keys, private credentials, or sensitive user information**. All environment-specific parameters are loaded via environment variables.
-
-### Environment Setup
-
-1. Copy `.env.example` to create your local `.env` file:
-   ```bash
-   cp .env.example .env
-   ```
-
-2. Configure your keys in `.env`:
-   ```env
-   VITE_SUPABASE_URL=https://your-supabase-project.supabase.co
-   VITE_SUPABASE_ANON_KEY=your-supabase-anon-key-here
-   SUPABASE_SERVICE_ROLE_KEY=your-supabase-service-role-key-here
-   VITE_OPENAI_API_KEY=your-openai-api-key-here
-   ```
-
-*(Note: `.env` is listed in `.gitignore` and is never committed to Git.)*
+### 🔎 Fast Full-Text Search
+- Instant full-text search across historical events, historical people, and civilizations with weighted title and summary ranking.
 
 ---
 
-## 🚀 Local Development Quickstart
+## 🚀 Quickstart & Scripts
 
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/abhishekkumar74/atlas-of-fime.git
-   cd atlas-of-fime
-   ```
+```bash
+# Install dependencies
+npm install
 
-2. **Install dependencies:**
-   ```bash
-   npm install
-   ```
+# Start local development server
+npm run dev
 
-3. **Start local development server:**
-   ```bash
-   npm run dev
-   ```
+# Run automated test suite
+npm run test
 
-4. Open [http://localhost:5173/](http://localhost:5173/) in your browser.
+# Run TypeScript type checking
+npm run typecheck
 
----
+# Run ESLint check
+npm run lint
 
-## 🧪 Testing & Quality Assurance
-
-- **Run Automated Unit & Integration Tests (58 Tests across 17 Files):**
-  ```bash
-  npm run test
-  ```
-- **TypeScript Type Checking:**
-  ```bash
-  npm run typecheck
-  ```
-- **ESLint Code Quality Audit:**
-  ```bash
-  npm run lint
-  ```
-- **Production Build:**
-  ```bash
-  npm run build
-  ```
-
----
-
-## 📄 License
-
-Open-source under the MIT License.
+# Build for production
+npm run build
+```
