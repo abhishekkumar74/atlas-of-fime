@@ -1,72 +1,102 @@
-# Atlas of Time — Phase 10: Polish & Final Release
+# Atlas of Time (`atlas-of-fime`)
 
-An interactive timeline-based history platform exploring Earth, Humanity, and Civilization through a logarithmic chronological spine.
-
----
-
-## 🚀 Key Features (Phase 10 Polish)
-
-- **Route-Based Dynamic Code-Splitting (`App.tsx`):**
-  - Uses `React.lazy()` and `<Suspense>` to isolate heavy Admin CMS (`AdminDashboardPage`) and Auth (`LoginPage`) bundles into separate asynchronous chunks (`4.34 kB` and `14.54 kB`), keeping initial timeline page load minimal for anonymous visitors.
-- **Accessibility & Focus Traps (`DetailPanel.tsx`, `accessibility.test.ts`):**
-  - Focus trap implementation in `DetailPanel.tsx` and `AIHistorianModal.tsx` preventing focus leakage to background timeline nodes while panels are open.
-  - Complete ARIA accessibility pass (`role="dialog"`, `aria-modal="true"`, `aria-label`).
-  - Automated unit test suite `accessibility.test.ts` verifying WCAG AA contrast standards.
-- **"Start Here" Onboarding Tour (`OnboardingTour.tsx`):**
-  - 8-step skippable chronological tour through seeded eras (Big Bang → First Life → Agriculture → Indus Valley → Ashoka → Renaissance → Mughal Empire → Independence).
-  - Automatically scrolls timeline and opens detail panels for each era step, saving preference in `localStorage`.
-- **SEO, Schema.org JSON-LD & XML Sitemap (`SEOHead.tsx`, `sitemapGenerator.ts`):**
-  - `<SEOHead />` injecting dynamic `<title>`, meta description, Open Graph tags, canonical URLs, and Schema.org `Event`/`Person` JSON-LD structured data.
-  - `generateSitemapXML()` generating valid sitemap XML restricted strictly to `published` entities (drafts excluded).
+An open-source, interactive timeline platform exploring 13.8 billion years of Earth, Humanity, and Civilization through a logarithmic chronological spine, real-world spatial map, and grounded AI historian navigation.
 
 ---
 
-## 🏁 Phase 1–9 Regression Matrix
+## 🌟 Key Features & Architecture
 
-| Phase | Component / Feature | Status | Verification Result |
-|---|---|---|---|
-| Phase 1 | Foundation & Logarithmic Engine | ✅ Passed | Logarithmic date formula (`yearsBPtoPos`) & themed palette verified |
-| Phase 2 | Interactive Timeline & Anchored Zoom | ✅ Passed | Continuous anchored zoom (100%–2000%) & detail panel slide-in verified |
-| Phase 3 | Knowledge Graph & People Entities | ✅ Passed | Polymorphic `entity_relationships` & `/history/people/:slug` routing verified |
-| Phase 4 | World Map Spatial Atlas | ✅ Passed | 10 schematic region pins & spatial fallback query service verified |
-| Phase 5 | India Deep Track & Academic Sourcing | ✅ Passed | `sources` table & `validateEntitySourcing` zero-unsourced enforcement verified |
-| Phase 6 | Global Expansion & Virtualization | ✅ Passed | 70+ global events & viewport virtualization engine (`< 0.1ms`) verified |
-| Phase 7 | Full-Text Search (Postgres FTS) | ✅ Passed | Weighted `tsvector`, GIN indexes, `search_entities` RPC & year jump fallback verified |
-| Phase 8 | Sourcing & Editorial System | ✅ Passed | Supabase Auth, `profiles` trigger, `content_status` RLS lockdown & Admin CMS verified |
-| Phase 9 | AI Historian Grounded Navigation | ✅ Passed | Retrieval grounding, non-hallucination refusal, rate limiting & citation chips verified |
-| Phase 10 | Accessibility, Onboarding & SEO | ✅ Passed | Focus traps, route code-splitting, axe-core contrast tests & sitemap generator verified |
+- **Logarithmic Chronological Spine:** Seamlessly visualizes cosmic time (Big Bang ~13.8B BP) down to the modern era on a single continuous, non-linear timeline.
+- **Time Machine Scrubber Wheel:** Tactile continuous time scrubber for effortless time-travel across millennia with real-time map locus fly-to and era highlighting.
+- **Real-World Spatial Atlas:** MapLibre GL JS vector & raster integration with historical boundary snapshot overlays.
+- **Grounded AI Historian:** Retrieval-augmented navigation over Supabase database records using OpenAI `gpt-4o-mini` with clickable entity citations.
+- **Editorial CMS & Role-Based Security:** Multistage editorial workflow (`Draft ➔ Review ➔ Approved ➔ Published`) enforced by Supabase Row Level Security (RLS) policies.
 
 ---
 
-## 🗄️ Database Migrations
+## 🗄️ Database Setup & Supabase DDL Schema
 
-1. `20260816000000_phase1_foundation.sql` (Events & Layers)
-2. `20260816000001_phase3_knowledge_graph.sql` (People & Entity Relationships)
-3. `20260816000002_phase4_world_map.sql` (Regions, Civilizations, Territories & Event Links)
-4. `20260816000003_phase5_india_deep_track.sql` (Sources & India Deep Track)
-5. `20260816000004_phase6_global_expansion.sql` (Global Expansion & Lateral Links)
-6. `20260816000005_phase7_search.sql` (Weighted tsvector, GIN Indexes & search_entities RPC)
-7. `20260816000006_phase8_editorial_rls.sql` (Profiles, Auth Trigger, Published Backfill & RLS Lockdown)
-8. `20260816000007_phase9_ai_historian.sql` (ai_queries Audit Logging Table & RLS Policies)
+This repository includes a complete, self-contained, open-source Supabase DDL SQL schema file: **[`supabase/schema.sql`](supabase/schema.sql)**.
+
+To set up your own database backend:
+
+1. Create a free project at [Supabase.com](https://supabase.com/).
+2. Navigate to **SQL Editor** in your Supabase Dashboard.
+3. Paste the contents of `supabase/schema.sql` and click **Run**.
+4. This instantly provisions:
+   - All 11 core production tables (`events`, `event_dates`, `event_locations`, `people`, `civilizations`, `relationships`, `sources`, `profiles`, `layers`, `event_layers`, `event_sources`).
+   - Postgres Full-Text Search (`fts` generated columns & GIN indexes).
+   - Row Level Security (RLS) policies for Viewer, Editor, and Admin role isolation.
+   - Automatic `on_auth_user_created` trigger for user profile management.
 
 ---
 
-## 🧪 Testing & Verification Scripts
+## 🔒 Security & Environment Setup
 
-- **Run Unit Tests (47 Tests Across 12 Test Files)**:
+This repository contains **zero hardcoded API keys, private credentials, or sensitive user information**. All environment-specific parameters are loaded via environment variables.
+
+### Environment Setup
+
+1. Copy `.env.example` to create your local `.env` file:
+   ```bash
+   cp .env.example .env
+   ```
+
+2. Configure your keys in `.env`:
+   ```env
+   VITE_SUPABASE_URL=https://your-supabase-project.supabase.co
+   VITE_SUPABASE_ANON_KEY=your-supabase-anon-key-here
+   SUPABASE_SERVICE_ROLE_KEY=your-supabase-service-role-key-here
+   VITE_OPENAI_API_KEY=your-openai-api-key-here
+   ```
+
+*(Note: `.env` is listed in `.gitignore` and is never committed to Git.)*
+
+---
+
+## 🚀 Local Development Quickstart
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/abhishekkumar74/atlas-of-fime.git
+   cd atlas-of-fime
+   ```
+
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+3. **Start local development server:**
+   ```bash
+   npm run dev
+   ```
+
+4. Open [http://localhost:5173/](http://localhost:5173/) in your browser.
+
+---
+
+## 🧪 Testing & Quality Assurance
+
+- **Run Automated Unit & Integration Tests (58 Tests across 17 Files):**
   ```bash
   npm run test
   ```
-- **Strict TypeScript Type Checking**:
+- **TypeScript Type Checking:**
   ```bash
   npm run typecheck
   ```
-- **Code Linting**:
+- **ESLint Code Quality Audit:**
   ```bash
   npm run lint
   ```
-- **Production Build**:
+- **Production Build:**
   ```bash
   npm run build
   ```
-# atlas-of-fime
+
+---
+
+## 📄 License
+
+Open-source under the MIT License.
