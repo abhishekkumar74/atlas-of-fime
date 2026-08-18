@@ -5,6 +5,20 @@ import { SEED_PEOPLE } from './queries/relationships';
 import { SEED_CIVILIZATIONS } from './queries/map';
 import { formatYearsBP } from './dateEngine';
 
+const STOP_WORDS = new Set([
+  'tell', 'me', 'about', 'what', 'is', 'who', 'was', 'were', 'the', 'a', 'an',
+  'when', 'did', 'where', 'how', 'why', 'can', 'you', 'explain', 'show', 'give',
+  'information', 'history', 'details', 'detail', 'of'
+]);
+
+export function extractKeywords(query: string): string[] {
+  return query
+    .toLowerCase()
+    .replace(/[^\w\s]/g, '')
+    .split(/\s+/)
+    .filter((word) => word.length > 1 && !STOP_WORDS.has(word));
+}
+
 async function fetchWithTimeout<T>(promise: Promise<T>, ms = 250): Promise<T> {
   let timeoutId: any;
   const timeoutPromise = new Promise<never>((_, reject) => {
@@ -79,10 +93,13 @@ export async function searchEntitiesServer(
     }));
   }
 
-  // 2. Try Supabase FTS RPC function
+  // 2. Try Supabase FTS RPC function if online
+  const keywords = extractKeywords(query);
+  const searchPhrase = keywords.length > 0 ? keywords.join(' & ') : query;
+
   try {
     const { data, error } = await fetchWithTimeout(
-      supabase.rpc('search_entities', { query_text: query, max_limit: limit }),
+      supabase.rpc('search_entities', { query_text: searchPhrase, max_limit: limit }),
       250
     );
 
@@ -105,14 +122,14 @@ export async function searchEntitiesServer(
     // Fallback to local weighted matching engine
   }
 
-  // 3. Fallback Weighted Local Entity Search Engine
+  // 3. Fallback Weighted Local Entity Search Engine with Keyword Token Matching
   const results: UnifiedSearchResult[] = [];
 
   // Search Events
   for (const event of MOCK_SEED_EVENTS) {
     const title = event.title.toLowerCase();
     const summary = event.summary.toLowerCase();
-    const yearStr = String(event.date.year_start).toLowerCase();
+    const category = event.category.toLowerCase();
 
     let score = 0;
     let matchedField: UnifiedSearchResult['matchedField'] = 'text';
@@ -123,9 +140,19 @@ export async function searchEntitiesServer(
     } else if (title.includes(query)) {
       score = 2;
       matchedField = 'title-contains';
-    } else if (yearStr.includes(query)) {
-      score = 3;
-      matchedField = 'year';
+    } else if (
+      keywords.length > 0 &&
+      keywords.length <= 2 &&
+      keywords.every((kw) => title.includes(kw) || summary.includes(kw) || category.includes(kw))
+    ) {
+      score = 2.5;
+      matchedField = 'title-contains';
+    } else if (
+      keywords.length > 2 &&
+      keywords.filter((kw) => title.includes(kw) || summary.includes(kw) || category.includes(kw)).length >= Math.ceil(keywords.length * 0.7)
+    ) {
+      score = 2.8;
+      matchedField = 'text';
     } else if (summary.includes(query)) {
       score = 4;
       matchedField = 'text';
@@ -166,6 +193,19 @@ export async function searchEntitiesServer(
     } else if (name.includes(query) || altNames.some((n) => n.includes(query))) {
       score = 2;
       matchedField = 'title-contains';
+    } else if (
+      keywords.length > 0 &&
+      keywords.length <= 2 &&
+      keywords.every((kw) => name.includes(kw) || summary.includes(kw) || altNames.some((n) => n.includes(kw)))
+    ) {
+      score = 3;
+      matchedField = 'title-contains';
+    } else if (
+      keywords.length > 2 &&
+      keywords.filter((kw) => name.includes(kw) || summary.includes(kw) || altNames.some((n) => n.includes(kw))).length >= Math.ceil(keywords.length * 0.7)
+    ) {
+      score = 3.5;
+      matchedField = 'text';
     } else if (summary.includes(query)) {
       score = 4;
       matchedField = 'text';
@@ -199,6 +239,19 @@ export async function searchEntitiesServer(
     } else if (name.includes(query)) {
       score = 2;
       matchedField = 'title-contains';
+    } else if (
+      keywords.length > 0 &&
+      keywords.length <= 2 &&
+      keywords.every((kw) => name.includes(kw) || summary.includes(kw))
+    ) {
+      score = 3;
+      matchedField = 'title-contains';
+    } else if (
+      keywords.length > 2 &&
+      keywords.filter((kw) => name.includes(kw) || summary.includes(kw)).length >= Math.ceil(keywords.length * 0.7)
+    ) {
+      score = 3.5;
+      matchedField = 'text';
     } else if (summary.includes(query)) {
       score = 4;
       matchedField = 'text';
@@ -218,7 +271,7 @@ export async function searchEntitiesServer(
     }
   }
 
-  // Sort by score ascending (1 = title prefix, 2 = title contains, 3 = year, 4 = text)
+  // Sort by score ascending (1 = title prefix, 2 = title contains, 3 = keyword match, 4 = text)
   results.sort((a, b) => {
     if (a.score !== b.score) return a.score - b.score;
     return a.title.localeCompare(b.title);
